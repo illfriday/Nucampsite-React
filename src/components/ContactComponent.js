@@ -1,64 +1,73 @@
 import React, { Component } from "react";
-import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback } from "reactstrap";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Col,
+  FormFeedback,
+} from "reactstrap";
 import { Link } from "react-router-dom";
 
 class Contact extends Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      firstName: '',
-      lastName: '',
-      phoneNum: '',
-      email: '',
+      firstName: "",
+      lastName: "",
+      phoneNum: "",
+      email: "",
       agree: false,
-      contactType: 'By Phone',
-      feedback: '',
+      contactType: "By Phone",
+      feedback: "",
       touched: {
         firstName: false,
         lastName: false,
         phoneNum: false,
-        email: false
-      }
+        email: false,
+      },
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  validate(firstName, lastName, phoneNum, email){
-
+  validate(firstName, lastName, phoneNum, email) {
     const errors = {
-      firstName: '',
-      lastName: '',
-      phoneNum: '',
-      email: ''
-    }
+      firstName: "",
+      lastName: "",
+      phoneNum: "",
+      email: "",
+    };
 
-    if(this.state.touched.firstName) {
+    if (this.state.touched.firstName) {
       if (firstName.length < 2) {
-        errors.firstName = 'First name must be at least 2 characters.';
+        errors.firstName = "First name must be at least 2 characters.";
       } else if (firstName.length > 15) {
-        errors.firstName = 'First name must be no more than 15 characters.';
+        errors.firstName = "First name must be no more than 15 characters.";
       }
     }
 
     if (this.state.touched.lastName) {
       if (lastName.length < 2) {
-        errors.lastName = 'Last name must be at least 2 characters.';
+        errors.lastName = "Last name must be at least 2 characters.";
       } else if (lastName.length > 15) {
-        errors.lastName = 'Last name must be no more than 15 characters.';
+        errors.lastName = "Last name must be no more than 15 characters.";
       }
     }
 
     const reg = /^\d+$/;
     if (this.state.touched.phoneNum && !reg.test(phoneNum)) {
-      errors.phoneNum = 'The phone number should only contain numerical characters.';
+      errors.phoneNum =
+        "The phone number should only contain numerical characters.";
     }
 
-    if (this.state.touched.email && !email.includes('@')) {
-      errors.email = 'Please enter a valid email.';
+    if (this.state.touched.email && !email.includes("@")) {
+      errors.email = "Please enter a valid email.";
     }
 
     return errors;
@@ -66,17 +75,17 @@ class Contact extends Component {
 
   handleBlur = (field) => () => {
     this.setState({
-      touched: {...this.state.touched, [field]: true}
-    })
-  }
+      touched: { ...this.state.touched, [field]: true },
+    });
+  };
 
   handleInputChange(event) {
     const target = event.target;
     const name = target.name;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
   }
 
@@ -87,8 +96,12 @@ class Contact extends Component {
   }
 
   render() {
-
-    const errors = this.validate(this.state.firstName, this.state.lastName, this.state.phoneNum, this.state.email);
+    const errors = this.validate(
+      this.state.firstName,
+      this.state.lastName,
+      this.state.phoneNum,
+      this.state.email
+    );
 
     return (
       <div className="container">
@@ -170,7 +183,7 @@ class Contact extends Component {
                     name="lastName"
                     placeholder="Last Name"
                     value={this.state.lastName}
-                    invalid={errors.lastName} 
+                    invalid={errors.lastName}
                     onBlur={this.handleBlur("lastName")}
                     onChange={this.handleInputChange}
                   />
@@ -187,7 +200,8 @@ class Contact extends Component {
                     id="phoneNum"
                     name="phoneNum"
                     placeholder="Phone Number"
-                    value={this.state.phoneNum} invalid={errors.phoneNum} 
+                    value={this.state.phoneNum}
+                    invalid={errors.phoneNum}
                     onBlur={this.handleBlur("phoneNum")}
                     onChange={this.handleInputChange}
                   />
@@ -204,7 +218,8 @@ class Contact extends Component {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    value={this.state.email} invalid={errors.email} 
+                    value={this.state.email}
+                    invalid={errors.email}
                     onBlur={this.handleBlur("email")}
                     onChange={this.handleInputChange}
                   />
