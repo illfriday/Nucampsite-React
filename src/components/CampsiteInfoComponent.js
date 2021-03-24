@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   Card,
   CardImg,
@@ -6,8 +6,127 @@ import {
   CardBody,
   Breadcrumb,
   BreadcrumbItem,
+  Button,
+  Label,
+  Modal,
+  ModalHeader, 
+  ModalBody, 
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import { Control, LocalForm, Errors } from "react-redux-form";
+
+const required = (val) => val && val.length;
+const maxLength = (len) => (val) => !val || val.length <= len;
+const minLength = (len) => (val) => val && val.length >= len;
+const requiredRating = (val) => val;
+
+class CommentForm extends Component {
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      isModalOpen: false
+    };
+     this.toggleModal = this.toggleModal.bind(this);
+  }
+
+    toggleModal() {
+    this.setState({
+      isModalOpen: !this.state.isModalOpen,
+    });
+  }
+
+    handleSubmit(values) {
+    console.log("Current state is: " + JSON.stringify(values));
+    alert("Current state is: " + JSON.stringify(values));
+  }
+
+  
+  render() {
+    return (
+      <>
+        <Button outline onClick={this.toggleModal}>
+          <i className=" fa fa-lg fa-pencil" />
+          Submit Comment
+        </Button>
+        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+          <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
+          <ModalBody>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+              <div className="form-group">
+                <Label htmlFor="rating">Rating</Label>
+                <Control.select
+                  className="form-control"
+                  model=".rating"
+                  id="rating"
+                  name="rating"
+                  validators={{
+                    requiredRating,
+                  }}
+                >
+                  <option default value="none">-</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </Control.select>
+                <Errors
+                  className="text-danger"
+                  model=".rating"
+                  show="touched"
+                  component="div"
+                  messages={{
+                    requiredRating: "you must select a rating",
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="author">Your Name</Label>
+                <Control.text
+                  className="form-control"
+                  model=".author"
+                  id="author"
+                  name="author"
+                  validators={{
+                    required,
+                    minLength: minLength(2),
+                    maxLength: maxLength(15),
+                  }}
+                ></Control.text>
+                <Errors
+                  className="text-danger"
+                  model=".author"
+                  show="touched"
+                  component="div"
+                  messages={{
+                    required: "This field is required",
+                    minLength: "This field must be at least 2 characters.",
+                    maxLength:
+                      "This field cannot be greater then 15 characters.",
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="text">Comment</Label>
+                <Control.textarea
+                  className="form-control"
+                  model=".text"
+                  id="text"
+                  name="text"
+                  rows="6"
+                />
+              </div>
+              <Button type="submit" color="primary">
+                Submit
+              </Button>
+            </LocalForm>
+          </ModalBody>
+        </Modal>
+      </>
+    );
+  }
+}
 
 function RenderCampsite({ campsite }) {
   return (
@@ -43,6 +162,7 @@ function RenderComments({ comments }) {
             </div>
           );
         })}
+        <CommentForm />
       </div>
     );
   } else {
