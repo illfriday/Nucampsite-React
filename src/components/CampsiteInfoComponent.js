@@ -14,6 +14,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { Loading } from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -23,25 +24,29 @@ const requiredRating = (val) => val;
 class CommentForm extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
-      isModalOpen: false
+      isModalOpen: false,
     };
-     this.toggleModal = this.toggleModal.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
-    toggleModal() {
+  toggleModal() {
     this.setState({
       isModalOpen: !this.state.isModalOpen,
     });
   }
 
-    handleSubmit(values) {
-    console.log("Current state is: " + JSON.stringify(values));
-    alert("Current state is: " + JSON.stringify(values));
+  handleSubmit(values) {
+    this.toggleModal();
+    this.props.addComment(
+      this.props.campsiteId,
+      values.rating,
+      values.author,
+      values.text
+    );
   }
 
-  
   render() {
     return (
       <>
@@ -55,6 +60,7 @@ class CommentForm extends Component {
             <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
               <div className="form-group">
                 <Label htmlFor="rating">Rating</Label>
+                {/* eslint-disable-next-line */}
                 <Control.select
                   className="form-control"
                   model=".rating"
@@ -64,7 +70,9 @@ class CommentForm extends Component {
                     requiredRating,
                   }}
                 >
-                  <option default value="none">-</option>
+                  <option default value="none">
+                    -
+                  </option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -83,6 +91,7 @@ class CommentForm extends Component {
               </div>
               <div className="form-group">
                 <Label htmlFor="author">Your Name</Label>
+                {/* eslint-disable-next-line */}
                 <Control.text
                   className="form-control"
                   model=".author"
@@ -109,6 +118,7 @@ class CommentForm extends Component {
               </div>
               <div className="form-group">
                 <Label htmlFor="text">Comment</Label>
+                {/* eslint-disable-next-line */}
                 <Control.textarea
                   className="form-control"
                   model=".text"
@@ -141,7 +151,7 @@ function RenderCampsite({ campsite }) {
   );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, campsiteId }) {
   if (comments) {
     return (
       <div className="col-md-5 m-1">
@@ -162,7 +172,7 @@ function RenderComments({ comments }) {
             </div>
           );
         })}
-        <CommentForm />
+        <CommentForm campsiteId={campsiteId} addComment={addComment} />
       </div>
     );
   } else {
@@ -171,6 +181,26 @@ function RenderComments({ comments }) {
 }
 
 function CampsiteInfo(props) {
+  if (props.isLoading) {
+    return (
+      <div className="container">
+        <div className="row">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+  if (props.errMess) {
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <h4>{props.errMess}</h4>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (props.campsite) {
     return (
       <div className="container">
@@ -188,8 +218,12 @@ function CampsiteInfo(props) {
         </div>
         <div className="row">
           <RenderCampsite campsite={props.campsite} />
-          <RenderComments comments={props.comments} />
-        </div>
+            <RenderComments 
+              comments={props.comments}
+              addComment={props.addComment}
+              campsiteId={props.campsite.id}
+            />
+          </div>
       </div>
     );
   } else {
